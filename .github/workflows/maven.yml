@@ -1,19 +1,19 @@
 # This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Java CI with Maven
+name: Java CI with Maven Docker GCP
 
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
 
 jobs:
-  build:
-
+  build-push-gcr:
+    name: Build and Push to GCP
     runs-on: ubuntu-latest
-
+    env:
+      IMAGE_NAME: maya-core
+      PROJECT_ID: maya-355709
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
@@ -22,5 +22,23 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+
+    - uses: google-github-action/setup-gcloud@master
+      with:
+        service_account_key: ${{secrets.SERVICE_ACCOUNT_KEY}}
+        project_id: ${{env.PROJECT_ID}}
+        export_default_credentials: true
+
+      - name:  Build Docker image
+        run: docker build -t $IMAGE_NAME:latest .
+
+      - name: Configure Docker client
+        run: gcloud auth configure-docker --quite
+
+      - name: Push docker image to container registry
+        run: docker tag maya-core:latest gcr.io/$PROJECT_ID/maya-core:latest
+             docker push maya-core:latest gcr.io/$PROJECT_ID/maya-core:latest
+
+
