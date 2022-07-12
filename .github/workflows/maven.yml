@@ -7,13 +7,14 @@ on:
 
 
 env:
-  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  PROJECT_ID: maya-355709
   GAR_LOCATION: us-central1 # TODO: update region of the Artifact Registry
   GKE_CLUSTER: maya-cluster    # TODO: update to cluster name
   GKE_ZONE: us-central1-c   # TODO: update to cluster zone
   DEPLOYMENT_NAME: maya-gke-test # TODO: update to deployment name
   REPOSITORY: images # TODO: update to Artifact Registry docker repository
   IMAGE: maya-service
+  SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }}
 
 jobs:
   setup-build-publish-deploy:
@@ -40,7 +41,7 @@ jobs:
       - id: 'auth'
         uses: 'google-github-actions/auth@v0'
         with:
-          credentials_json: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+          credentials_json: ${{ env.SERVICE_ACCOUNT_KEY }}
 
       - name: Docker configuration
         run: |-
