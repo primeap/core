@@ -1,47 +1,46 @@
 ---
-name: Build and Push Spring boot App Image to Google Cloud Platform
-
+name: Build and Push Python Image to Google Cloud Platform
 on:
   push:
-    branches: [ "master" ]
-
+    branches: [ main ]
 jobs:
-  MVN_BUILD_AND_DOCKER_BUILD_AND_PUBLISG_TO_GCR:
+  build-push-gcr:
+    name: Build and Push to GCP
     runs-on: ubuntu-latest
-    name: A job to build and push docker TO GC repository
-  env:
-    IMAGE_NAME: maya-core
-    PROJECT_ID: maya-355709
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    env:
+      IMAGE_NAME: maya-core
+      PROJECT_ID: maya-355709
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
 
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml -Dmaven.test.skip=true
+      - uses: google-github-actions/setup-gcloud@master
+        with:
+          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+          project_id: ${{ env.PROJECT_ID }}
+          export_default_credentials: true
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      - name: Build Docker Image
+        run: docker build -t $IMAGE_NAME:latest .
 
-    - name: Set up Docker Buildx with googe cred
-      uses: google-github-action/setup-gcloud@master
-      with:
-        service_account_key: ${{secrets.SERVICE_ACCOUNT_KEY}}
-        project_id: ${{env.PROJECT_ID}}
-        export_default_credentials: true
 
-    - name:  Build Docker image
-      run: docker build -t $IMAGE_NAME:latest .
+      - name: Configure Docker Client
+        run: |-
+          gcloud auth configure-docker --quiet
+          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
 
-    - name: Configure Docker client
-      run: gcloud auth configure-docker --quite
+      - name: Push Docker Image to Container Registry (GCR)
+        run: |-
+          docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
+          docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
 
-    - name: Push docker image to container registry
-      run: docker tag maya-core:latest gcr.io/$PROJECT_ID/maya-core:latest
-        docker push maya-core:latest gcr.io/$PROJECT_ID/maya-core:latest
+      - name: Push Docker Image to Artifact Registry
+        run: |-
+          docker tag $IMAGE_NAME:latest us-central1-docker.pkg.dev/$PROJECT_ID/images/$IMAGE_NAME:latest
+          docker push us-central1-docker.pkg.dev/$PROJECT_ID/images/$IMAGE_NAME:latest
