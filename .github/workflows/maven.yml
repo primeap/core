@@ -16,6 +16,7 @@ env:
   IMAGE: maya-service
 
 jobs:
+  runs-on: ubuntu-latest
   job_id:
     permissions:
       contents: 'read'
