@@ -18,15 +18,15 @@ jobs:
           subscription-id: 80752874-f329-4f0f-a5c1-5ef5683d6a42 #${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
 
-      - name: 'Get resource group with PowerShell action'
-        uses: azure/powershell@v1
-        with:
-          inlineScript: |
-            Get-AzResourceGroup
-          azPSVersion: "latest"
+#      - name: 'Get resource group with PowerShell action'
+#        uses: azure/powershell@v1
+#        with:
+#          inlineScript: |
+#            Get-AzResourceGroup
+#          azPSVersion: "latest"
 
       - name: 'Run Azure CLI commands'
         run: |
-          az account show
-          az group list
+#          az account show
+#          az group list
           pwd
