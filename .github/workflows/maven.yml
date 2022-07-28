@@ -7,7 +7,7 @@ permissions:
   contents: read
 
 jobs:
-  Windows-latest:
+  Ubuntu-latest:
     runs-on: ubuntu-latest
     steps:
       - name: OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)
@@ -23,3 +23,4 @@ jobs:
           az account show
           az group list
           pwd
+          az acr login -n crmayarepo.azurecr.io
