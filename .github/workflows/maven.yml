@@ -36,4 +36,4 @@ jobs:
           pwd
           ls
           az acr login -n crmayarepo
-          docker push core:latest
+          az acr docker push crmayarepo.azurecr.io/core:latest
