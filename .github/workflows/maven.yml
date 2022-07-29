@@ -33,7 +33,6 @@ jobs:
 
       - name: 'Run Azure CLI commands'
         run: |
-          pwd
-          ls
           az acr login -n crmayarepo
           docker push crmayarepo.azurecr.io/core:latest
+          docker run -d -p 8080:8080 crmayarepo.azurecr.io/core:latest
