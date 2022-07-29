@@ -37,4 +37,7 @@ jobs:
           docker push crmayarepo.azurecr.io/core:latest
 
       - name: 'Run Azure CLI commands Deploy and start image'
-        run: docker run -d -p 8080:8080 crmayarepo.azurecr.io/core:latest
+        run: |
+          docker ps
+          docker run -d -p 8080:8080 crmayarepo.azurecr.io/core:latest
+          docker ps
