@@ -39,5 +39,6 @@ jobs:
       - name: 'Run Azure CLI commands Deploy and start image'
         run: |
           docker ps
+          az container create --resource-group MVP --name azure-container-instance-maya --image crmayarepo.azurecr.io/core:updated 
           docker run -d -p 8080:8080 crmayarepo.azurecr.io/core:updated
           docker ps
