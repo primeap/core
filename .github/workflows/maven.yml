@@ -21,7 +21,7 @@ jobs:
         run: mvn -B package --file pom.xml -T8
 
       - name: 'Docker Build'
-        run: docker build --tag crmayarepo.azurecr.io/core:${{github.sha}} .
+        run: docker build --tag crmayarepo.azurecr.io/core:latest .
 
       - name: 'OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)'
         uses: azure/login@v1
@@ -34,7 +34,6 @@ jobs:
       - name: 'Run Azure CLI commands to push and deploy'
         run: |
           az acr login -n crmayarepo
-          docker push crmayarepo.azurecr.io/core:${{github.sha}}
-          docker run -d -p 8080:8080 crmayarepo.azurecr.io/core:${{github.sha}}
-      - name: 'docker ps command'
-        run: docker ps
+          docker push crmayarepo.azurecr.io/core:latest
+          az container restart --name azure-container-instance-maya  --resource-group MVP
+
