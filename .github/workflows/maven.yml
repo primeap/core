@@ -31,7 +31,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
 
-      - name: 'Run Azure CLI commands'
+      - name: 'Run Azure CLI commands to push and deploy'
         run: |
           az acr login -n crmayarepo
           docker push crmayarepo.azurecr.io/core:latest
