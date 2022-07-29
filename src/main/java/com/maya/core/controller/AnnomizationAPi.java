@@ -28,7 +28,7 @@ public class AnnomizationAPi {
     AnnomizationService service;
     @RequestMapping(path = "/")
     public String sayHello(){
-        return "Hell0";
+        return "Hello World";
     }
 
     @PostMapping("/")
