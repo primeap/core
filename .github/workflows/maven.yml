@@ -11,28 +11,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 17
+      - name: 'Set up JDK 17'
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-      - name: Build with Maven
+      - name: 'Build with Maven'
         run: mvn -B package --file pom.xml -T8
 
-      - name: Docker Build
+      - name: 'Docker Build'
         run: docker build --tag crmayarepo.azurecr.io/core:updated .
 
-      - name: OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)
+      - name: 'OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)'
         uses: azure/login@v1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
-
-      - name: Check CLI version
-        run: az --version
 
       - name: 'Run Azure CLI commands to push and deploy'
         run: |
