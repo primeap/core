@@ -33,7 +33,6 @@ jobs:
 
       - name: 'Run Azure CLI commands to push and deploy'
         run: |
-#          az acr login -n crmayarepo
           docker login crmayarepo.azurecr.io
           docker push crmayarepo.azurecr.io/core:updated
 
