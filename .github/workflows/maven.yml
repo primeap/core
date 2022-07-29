@@ -18,10 +18,10 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build with Maven
-        run: mvn -B package --file pom.xml -T4
+        run: mvn -B package --file pom.xml -T8
 
       - name: Docker Build
-        run: docker build --tag crmayarepo.azurecr.io/core:latest .
+        run: docker build --tag crmayarepo.azurecr.io/core:updated .
 
       - name: OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)
         uses: azure/login@v1
@@ -31,13 +31,17 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
 
+      - name: Check CLI version
+        run: az --version
+
       - name: 'Run Azure CLI commands to push and deploy'
         run: |
-          az acr login -n crmayarepo
-          docker push crmayarepo.azurecr.io/core:latest
+#          az acr login -n crmayarepo
+          docker login crmayarepo.azurecr.io
+          docker push crmayarepo.azurecr.io/core:updated
 
       - name: 'Run Azure CLI commands Deploy and start image'
         run: |
           docker ps
-          docker run -d -p 8080:8080 crmayarepo.azurecr.io/core:latest
+          docker run -d -p 8080:8080 crmayarepo.azurecr.io/core:updated
           docker ps
